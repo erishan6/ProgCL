@@ -2,23 +2,21 @@
 import calendar
 
 def check_leap_year_using_lib(year):
-    if calendar.isleap(year):
-        print(year,"is a leap year")
-    else:
-        print(year,"is not a leap year")
+    return calendar.isleap(year)
 
 def check_leap_year_using_algo(year):
     if year % 400 == 0:
-        print(year, "is a leap year")
+        return True
     elif year % 100 == 0:
-        print(year, "is not a leap year")
+        return False
     elif year % 4 == 0:
-        print(year, "is a leap year")
+        return True
     else:
-        print(year, "is not a leap year")
+        return False
 
 if __name__ == '__main__':
     year = int(input("Enter a year A.D.: "))
-    check_leap_year_using_lib(year)
-    #check_leap_year_using_algo(year)
-
+    if check_leap_year_using_lib(year):  # check_leap_year_using_algo(year) for
+        print(year, "is a leap year")
+    else:
+        print(year, "is not a leap year")

@@ -1,41 +1,19 @@
 # -*- coding: utf-8 -*-
-import turtle  # Outside_In
 import turtle
-import time
-import random
 
-def createSquare(skk):
-    for i in range(4):
-        skk.forward(50)
-        skk.right(90)
+
+def drawFigure(size=20, rows=8):
+    skk = turtle.Turtle()
+    for row in range(rows):
+        for col in range(row + 1):
+            print(row, col)
+            for i in range(4):
+                skk.forward(size)
+                skk.right(90)
+            skk.setx(size * (col + 1))
+        skk.sety(-size * (row + 1))
+        skk.setx(0)
+    turtle.done()
 
 if __name__ == '__main__':
-    print("This program draws shapes based on the number you enter in a uniform pattern.")
-    num_str = input("Enter the side number of the shape you want to draw: ")
-    if num_str.isdigit():
-        squares = int(num_str)
-
-    angle = 180 - 180 * (squares - 2) / squares
-
-    turtle.up
-
-    x = 0
-    y = 0
-    turtle.setpos(x, y)
-
-    numshapes = 8
-    for x in range(numshapes):
-        turtle.color(random.random(), random.random(), random.random())
-        x += 5
-        y += 5
-        turtle.forward(x)
-        turtle.left(y)
-        for i in range(squares):
-            turtle.begin_fill()
-            turtle.down()
-            turtle.forward(40)
-            turtle.left(angle)
-            turtle.forward(40)
-            print(turtle.pos())
-            turtle.up()
-            turtle.end_fill()
+    drawFigure()  # pass number of size and rows for various configuration
