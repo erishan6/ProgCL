@@ -2,7 +2,7 @@
 
 def sum_except(start, end, omit=None):
     res = 0
-    for i in range(start,end):
+    for i in range(start, end + 1):
         if i==omit:
             continue
         res += i
@@ -33,7 +33,7 @@ def find_biggest_prime(x):
     return None
 
 if __name__ == '__main__':
-    print(sum_except(0,6,2))
+    print(sum_except(0, 10))
     print(sum_step(0,6))
     print(is_prime(104593))
     print(find_biggest_prime(10))
