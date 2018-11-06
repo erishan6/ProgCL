@@ -6,7 +6,7 @@ def drawFigure(size=20, rows=8):
     skk = turtle.Turtle()
     for row in range(rows):
         for col in range(row + 1):
-            print(row, col)
+            # print(row, col)
             for i in range(4):
                 skk.forward(size)
                 skk.right(90)
