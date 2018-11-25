@@ -1,0 +1,41 @@
+For list [1, 2, 3, 4, 5] sum of the elements is:
+sum_1 =  15
+sum_2 =  15
+If we sum only even numbers we will get:
+sum_even =  6
+
+Histogram for list [1, 2, 3, 4, 5, 6, 7, 4, 8, 4, 8, 2, 2, 1, 10]
+1  *
+2  **
+3  ***
+4  ****
+5  *****
+6  ******
+7  *******
+4  ****
+8  ********
+4  ****
+8  ********
+2  **
+2  **
+1  *
+10 **********
+
+Let's start with list [1, 2, 3, 4, 5] and increase it 4 times
+[2, 3, 4, 5, 6]
+[3, 4, 5, 6, 7]
+[4, 5, 6, 7, 8]
+[5, 6, 7, 8, 9]
+
+Let's start with [1, 2, 3, 4, 5] and normalize it three times
+[-2.0, -1.0, 0.0, 1.0, 2.0]
+[-2.0, -1.0, 0.0, 1.0, 2.0]
+[-2.0, -1.0, 0.0, 1.0, 2.0]
+
+Why it is always the same?
+Oh, it's because the list's sum is now 0
+
+Forwards:
+I do not like them Sam I am
+Backwards:
+am I Sam them like not do I
