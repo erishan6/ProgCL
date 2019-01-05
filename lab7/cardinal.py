@@ -47,6 +47,7 @@ number_system = {
 def number_formation(number_words):
     numbers = []
     for number_word in number_words:
+
         numbers.append(number_system[number_word])
     if len(numbers) == 4:
         return (numbers[0] * numbers[1]) + numbers[2] + numbers[3]
@@ -58,10 +59,11 @@ def number_formation(number_words):
         else:
             return numbers[0] + numbers[1]
     else:
+        # print(numbers[0])
         return numbers[0]
 
 
-def word_to_num(number_sentence):
+def card2int(number_sentence):
     number_sentence = number_sentence.replace('-', ' ').replace(',', ' ')
     number_sentence = number_sentence.lower()
 
@@ -71,6 +73,7 @@ def word_to_num(number_sentence):
 
     for word in split_words:
         if word in number_system:
+            # print(word)
             clean_numbers.append(word)
 
     bignumber_dict = {}
@@ -96,16 +99,21 @@ def word_to_num(number_sentence):
             i = 0
             for number in bignumber_dict:
                 if bignumber_dict[number] != -1:
-                    multiplier = number_formation(clean_numbers[i:bignumber_dict[number]])
+                    if bignumber_dict[number] == 0:
+                        multiplier = 1
+                    else:
+                        multiplier = number_formation(clean_numbers[i:bignumber_dict[number]])
                     total_sum += multiplier * number_system[number]
                     i = bignumber_dict[number] + 1
             hundreds = number_formation(clean_numbers[i:])
+            # print(i)
 
             total_sum += hundreds
-
+    if "negative" in number_sentence:
+        total_sum = -1 * total_sum
     return total_sum
 
 
 if __name__ == '__main__':
-    print(word_to_num('fourteen trillion, five hundred sixty-two billion , eleven million sixty-seven'))
-    print(word_to_num('fifty-five'))
+    # print(card2int('fourteen trillion, five hundred sixty-two billion , eleven million sixty-seven'))
+    print(card2int('nonillion two hundred sixty four'))

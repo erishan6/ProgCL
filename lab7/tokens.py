@@ -5,6 +5,7 @@ import re
 def tokenize(text):
     res = []
     words = text.split()
+    text.isupper()
     for w in words:
         if '\'' in w:
             temp = w.split("\'")
