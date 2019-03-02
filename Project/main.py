@@ -30,7 +30,7 @@ def main():
             print("Enter the value of n(integer value)")
             n = int(input())
             c = lm.LanguageModel(n)
-            print(str(c))
+            print("The value for ngram language model is ", n, "gram model")
 
         elif text=="2":
             print()
