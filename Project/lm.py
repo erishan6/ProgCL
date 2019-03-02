@@ -24,11 +24,15 @@ class LanguageModel:
         # pad = "PAD "*(self.n-1)
         # print(pad)
         # data = pad+file.read()+pad
-        data = file.read().lower()
-        lst = corpus.tokenize(data)
-        # print(len(lst))
-        return lst
+        data = file.readlines()
+        # print(data)
+        self.train_file(data)
 
+    # list of sentences in file
+    def train_file(self, sentences):
+        for line in sentences:
+            # print(line)
+            self.train(corpus.tokenize(line.lower()))
     # write unit tests for empty, short token or negative, 0, positive, more than token length
     def get_ngrams(self, tokens, ngramsize):
         newlst = []
@@ -111,6 +115,7 @@ class LanguageModel:
                 break
             res.append(s)
         return res
+
     # calculate the perplexity of the given text.
     def perplexity(self):
         print()

@@ -39,9 +39,10 @@ def main():
             # TODO update it take command line input
             filename  = input()
             # filename = "dev_shakespeare.txt"
-            lst = c.load(filename)
+            # lst = c.load(filename)
+            c.load(filename)
             # print(lst)
-            c.train(lst)
+            # c.train(lst)
             # print((c.counts))
 
         elif text == "3":

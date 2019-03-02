@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import string
 import random
+import string
+
 
 def tokenize(txt):
-    return [word.strip(string.punctuation) for word in txt.split()]
+    return [word.strip(string.punctuation) for word in txt.lower().split()]
 
 def detokenize(lst):
     res = ""
