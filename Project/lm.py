@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-import corpus
 import random
+
+import corpus
+
+
 class LanguageModel:
 
     def __init__(self, n):
@@ -21,8 +24,8 @@ class LanguageModel:
         # pad = "PAD "*(self.n-1)
         # print(pad)
         # data = pad+file.read()+pad
-        data = file.read()
-        lst=corpus.tokenize(data.lower())
+        data = file.read().lower()
+        lst = corpus.tokenize(data)
         # print(len(lst))
         return lst
 
@@ -69,28 +72,44 @@ class LanguageModel:
         # print(self.pdf)
 
     # returns the estimated probability distribution for the next word that occurs after the given token sequence
-    # TODO check for if tokens len is less than n gram
+    # TODO fix for unseen seq which is not present in dict
     def p_next(self, tokens):
         # print(tokens)
-        lst = tuple(tokens[len(tokens)-(self.n-1):])
-        # print(lst)
+        # print("to search this ", tokens[-(self.n-1):])
+        lst = tuple(tokens[-(self.n - 1):])
         return self.pdf[lst]
 
 
     # generates a random token sequence according to the underlying probability distribution
     def generate(self):
         res = []
-        first_word = random.choice(self.lst)
-        res.append(first_word)
-        print(first_word)
+        first_word = (random.choice(list(self.counts.keys())))
+        # print(first_word)
+        loopbreak = False
+        all_none = 0
+        for x in first_word:
+            if x == None:
+                loopbreak = True
+                all_none += 1
+                # case of all none
 
+            else:
+                res.append(x)
+        # res.append(first_word)
+        # res.append(list(first_word))
+        if all_none == len(first_word):
+            self.generate()
         while True:
-            s = corpus.sample(self.p_next(res))
-            if s==None:
+            # print("print ", type(tmp), tmp, "s = ", type(s), s)
+
+            if loopbreak:
                 break
             # print(s)
+            tmp = self.p_next(res)
+            s = corpus.sample(tmp)
+            if s == None:
+                break
             res.append(s)
-        print(corpus.detokenize(res))
         return res
     # calculate the perplexity of the given text.
     def perplexity(self):
@@ -99,9 +118,9 @@ class LanguageModel:
 
 
 if __name__ == '__main__':
-    lm  = LanguageModel(2)
+    lm = LanguageModel(3)
     lm.train([' the ', ' cat ', ' runs ', ' the ', ' cat ', ' the ', ' cat ', ' thea ', ' cat ', ' cat ' ,' the ', ' cats '])
-    lm.train([' the ', ' dog ', ' runs ' ])
+    lm.train([' the ', ' dog ', ' runs ', ' runs '])
     # lst1=[' the ', ' cat ', ' runs ', ' the ', ' cat ', ' the ', ' cat ', ' thea ', ' cat ', ' cat ' ,' the ', ' cats ']
     # lst2 = [' the ', ' dog ', ' runs ' ]
     # lm.train(lst1+lst2)
