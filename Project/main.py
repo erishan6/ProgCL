@@ -69,7 +69,7 @@ def main():
         elif text=="6":
             print()
             print("You have pressed 6 ")
-            print("Perplexity of the current language model is ", c.perplexity())
+            print("Perplexity of the current language model is ", round(c.perplexity()))
 
         elif text == "7":
             print()

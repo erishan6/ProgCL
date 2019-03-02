@@ -45,10 +45,11 @@ class LanguageModel:
         tmp = ""
         for line in sentences:
             # print(line)
-            if i % 1000 == 0 or i == size:
-                print(i)
+            if i % 20 == 0 or i == size:
                 self.train(corpus.tokenize(tmp.lower()))
                 tmp = ""
+            if i % 1000 == 0 or i == size:
+                print(round((i / size) * 100), "% done")
             tmp += line + " "
             i += 1
 
@@ -82,32 +83,41 @@ class LanguageModel:
         ngrams = [(None, 'most'), ('most', 'bounteous'), ('bounteous', 'sir'), ('sir', None)]
         counts = {(None,): {'most': 1}, ('most',): {'bounteous': 1}, ('bounteous',): {'sir': 1}, ('sir',): {None: 1}}
         pdf    = {(None,): {'most': 1.0}, ('most',): {'bounteous': 1.0}, ('bounteous',): {'sir': 1.0}, ('sir',): {None: 1.0}}
-
-P
     """
     def train(self, lst):
         # print(lst)
         ## TODO add logic for list of list case using instance
-        self.ngrams=self.get_ngrams(lst,self.n)
-        for word in lst:
-            self.vocabulary.add(word)
-        self.vocabulary.add(None)
-        # print(self.vocabulary)
-        # print(self.ngrams)
-        for current_ngram_seq in self.ngrams:
-            if current_ngram_seq[:(self.n - 1)] not in self.counts.keys():
-                self.counts[current_ngram_seq[:(self.n - 1)]] = {current_ngram_seq[(self.n - 1)]: 1}
-            else:
-                localdict = self.counts[current_ngram_seq[:(self.n - 1)]]
-                if current_ngram_seq[(self.n - 1)] not in localdict.keys():
-                    localdict[current_ngram_seq[(self.n - 1)]] = 1
+        if self.n == 1:
+            for word in lst:
+                self.vocabulary.add(word)
+                if word not in self.counts:
+                    self.counts[word] = 1
+                self.counts[word] += 1
+            # print(self.counts)
+            self.pdf = corpus.normalize(self.counts)
+            # print(self.pdf)
+
+        else:
+            self.ngrams = self.get_ngrams(lst, self.n)
+            for word in lst:
+                self.vocabulary.add(word)
+            self.vocabulary.add(None)
+            # print(self.vocabulary)
+            # print(self.ngrams)
+            for current_ngram_seq in self.ngrams:
+                if current_ngram_seq[:(self.n - 1)] not in self.counts.keys():
+                    self.counts[current_ngram_seq[:(self.n - 1)]] = {current_ngram_seq[(self.n - 1)]: 1}
                 else:
-                    localdict[current_ngram_seq[(self.n - 1)]] += 1
-        # print(self.counts)
-        self.pdf = self.counts.copy()
-        # print(self.pdf)
-        for z in self.pdf.keys():
-            self.pdf[z] = corpus.normalize(self.pdf[z])
+                    localdict = self.counts[current_ngram_seq[:(self.n - 1)]]
+                    if current_ngram_seq[(self.n - 1)] not in localdict.keys():
+                        localdict[current_ngram_seq[(self.n - 1)]] = 1
+                    else:
+                        localdict[current_ngram_seq[(self.n - 1)]] += 1
+            # print(self.counts)
+            self.pdf = self.counts.copy()
+            # print(self.pdf)
+            for z in self.pdf.keys():
+                self.pdf[z] = corpus.normalize(self.pdf[z])
         # print(self.pdf)
 
     """
@@ -118,35 +128,49 @@ P
     """
     # TODO fix for unseen seq which is not present in dict
     def p_next(self, tokens):
-        lst = tuple(tokens[-(self.n - 1):])
-        return self.pdf[lst]
+        if self.n == 1:
+            new_text = random.choice(list(self.counts.keys()))
+            if new_text == None:
+                return self.p_next(tokens)
+            return new_text
+        else:
+            lst = tuple(tokens[-(self.n - 1):])
+            return self.pdf[lst]
+
 
     """
             Generates a random token sequence according to the underlying probability distribution
     """
     def generate(self):
         res = []
-        first_word = (random.choice(list(self.counts.keys())))
-        # print(first_word)
-        loopbreak = False
-        all_none = 0
-        for x in first_word:
-            if x == None:
-                loopbreak = True
-                all_none += 1
-                # case of all none
+        if self.n == 1:
+            length = random.randint(1, 100)
+            # print(length)
+            for i in range(length):
+                res.append(self.p_next(['know']))
+        else:
 
-            else:
-                res.append(x)
-        if all_none == len(first_word):
-            self.generate()
-        while True:
-            if loopbreak:
-                break
-            s = corpus.sample(self.p_next(res))
-            if s == None:
-                break
-            res.append(s)
+            first_word = (random.choice(list(self.counts.keys())))
+            # print(first_word)
+            loopbreak = False
+            all_none = 0
+            for x in first_word:
+                if x == None:
+                    loopbreak = True
+                    all_none += 1
+                    # case of all none
+
+                else:
+                    res.append(x)
+            if all_none == len(first_word):
+                self.generate()
+            while True:
+                if loopbreak:
+                    break
+                s = corpus.sample(self.p_next(res))
+                if s == None:
+                    break
+                res.append(s)
         return res
 
     """
@@ -161,27 +185,29 @@ P
             Calculate the perplexity of the given Language Model. 
             link : https://en.wikipedia.org/wiki/Perplexity
     """
-    # calculate the perplexity of the given text.
     def perplexity(self):
         # print(math.log(1.5,2))
         res = 0
-        for x in self.pdf.keys():
-            tmp = self.pdf[x]
-            for y in tmp.values():
-                res += (math.log(y, 2) * -1)  # negative log signifies 1/(p(w_i)|p(w_i-1))
+        if self.n == 1:
+            for value in self.pdf.values():
+                res += (math.log(value, 2) * -1)
+
+        else:
+            for key in self.pdf.keys():
+                tmp = self.pdf[key]
+                for value in tmp.values():
+                    res += (math.log(value, 2) * -1)  # negative log signifies 1/(p(w_i)|p(w_i-1))
         return self.nthroot(res, self.n)
 
 
-
-
 if __name__ == '__main__':
-    lm = LanguageModel(3)
-    lm.train([' the ', ' cat ', ' runs ', ' the ', ' cat ', ' the ', ' cat ', ' thea ', ' cat ', ' cat ' ,' the ', ' cats '])
-    lm.train([' the ', ' dog ', ' runs ', ' runs '])
+    lm = LanguageModel(2)
+    # lm.train([' the ', ' cat ', ' runs ', ' the ', ' cat ', ' the ', ' cat ', ' thea ', ' cat ', ' cat ' ,' the ', ' cats '])
+    lm.train(['the', 'dog', 'runs', 'cat'])
     # lst1=[' the ', ' cat ', ' runs ', ' the ', ' cat ', ' the ', ' cat ', ' thea ', ' cat ', ' cat ' ,' the ', ' cats ']
     # lst2 = [' the ', ' dog ', ' runs ' ]
     # lm.train(lst1+lst2)
     # print((lm.counts[(' the ', ' cat ')][' runs ']))
-    # lm.generate()
-    print(lm.generate())
-    print(lm.perplexity())
+    # print(lm.generate())
+    # print(lm.perplexity())
+    # print(lm.p_next(['know']))
