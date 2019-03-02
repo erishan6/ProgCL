@@ -5,14 +5,6 @@ import corpus
 import lm
 
 
-# loads the corpus in the lst type
-def load(filename):
-    print(" Loading corpus")
-    file = open(filename, "r")
-    lst=corpus.tokenize(file.read())
-    # print(len(lst))
-    return lst
-
 def main():
     while True:
 
@@ -25,7 +17,6 @@ def main():
         print("Press 7 : Exit")
         print("Enter your choice (integer) ")
         text = input()
-        # c = lm.LanguageModel(3)
         if text=="1":
             print()
             print("Enter the value of n(integer value)")
@@ -37,7 +28,6 @@ def main():
             print()
             print("You have pressed 2")
             print("Enter the filename")
-            # TODO update it take command line input
             filename  = input()
             # filename = "dev_shakespeare.txt"
             # lst = c.load(filename)

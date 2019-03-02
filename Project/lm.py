@@ -6,30 +6,39 @@ import corpus
 
 
 class LanguageModel:
-
+    """
+        Constructor for LanguageModel class
+        :param n is of type int eg. gram size of language model
+    """
     def __init__(self, n):
         self.n = n
-        self.lst = [] # empty data
-        self.vocabulary = set()
-        self.ngrams=[]
-        self.counts = {}
-        self.pdf = {}
+        self.vocabulary = set()  # vocabulary of the language model
+        self.ngrams = []  # current list of ngram sequences ()
+        self.counts = {}  # list of ngram words counts
+        self.pdf = {}  # list of probability distribution for ngram words
 
+    """
+        Gives string representation for the class's object
+
+    """
     def __str__(self):
-        return str(self.n)
+        return "The value of n in ngram language model is " + str(self.n)
 
-    # loads the corpus in the lst type
+    """
+        Loads corpus from file. Trains the language model for the particular file
+        :param filename  
+    """
     def load(self, filename):
         print(" Loading corpus")
         file = open(filename, "r")
-        # pad = "PAD "*(self.n-1)
-        # print(pad)
-        # data = pad+file.read()+pad
-        data = file.readlines()
-        # print(data)
-        self.train_file(data)
+        sentences = file.readlines()
+        self.train_file(sentences)
 
-    # list of sentences in file
+    """
+        Internal fucntion for training by files. Has a logic if the file is too large. 
+        :param list of sentences eg.   
+        sentences = ["No farther, sir; a man may rot even here.", "What, in ill thoughts again?", "And that's true too."]
+    """
     def train_file(self, sentences):
         i = 1
         size = len(sentences)
@@ -43,7 +52,15 @@ class LanguageModel:
             tmp += line + " "
             i += 1
 
-    # write unit tests for empty, short token or negative, 0, positive, more than token length
+    """
+        Create ngrams for the particular list of tokens and n gram 
+        :param tokens is of type list containing tokenize version derived from corpus.tokenize() 
+        :param ngramsize is of type int. The value of ngram 
+        input  => tokens = ['oh', 'you', 'darling'], ngramsize = 2 
+        output => returns ngram sequences eg. [(None, 'oh'), ('oh', 'you'), ('you', 'darling'), ('darling', None)]
+    """
+
+    # TODO write unit tests for empty, short token or negative, 0, positive, more than token length
     def get_ngrams(self, tokens, ngramsize):
         newlst = []
         for i in range(ngramsize - 1):
@@ -51,33 +68,41 @@ class LanguageModel:
         newlst += tokens
         for i in range(ngramsize - 1):
             newlst.append(None)
-        # return newlst
         sequences = [tuple(newlst[i:i + ngramsize]) for i in range(len(newlst) - (ngramsize - 1))]
         # print((sequences))
         return sequences
 
-    # trains your language model and learns the n-gram statistics
+    """
+        Trains your language model with particular list of tokens and learns the n-gram statistics 
+        :param lst is of type list containing tokenize version derived from corpus.tokenize()  
+        input  => tokens = ['oh', 'you', 'darling']
+        
+        calculates vocab(set), ngrams(list), counts(dict of dict), pdf(dict of dict)
+        vocab  = {None, 'most', 'sir', 'bounteous'}
+        ngrams = [(None, 'most'), ('most', 'bounteous'), ('bounteous', 'sir'), ('sir', None)]
+        counts = {(None,): {'most': 1}, ('most',): {'bounteous': 1}, ('bounteous',): {'sir': 1}, ('sir',): {None: 1}}
+        pdf    = {(None,): {'most': 1.0}, ('most',): {'bounteous': 1.0}, ('bounteous',): {'sir': 1.0}, ('sir',): {None: 1.0}}
+
+P
+    """
     def train(self, lst):
         # print(lst)
-        self.lst = lst
         ## TODO add logic for list of list case using instance
         self.ngrams=self.get_ngrams(lst,self.n)
-        for x in lst:
-            self.vocabulary.add(x)
+        for word in lst:
+            self.vocabulary.add(word)
         self.vocabulary.add(None)
         # print(self.vocabulary)
         # print(self.ngrams)
-        for x in self.ngrams:
-            # print(x[:2], x[2])
-            if x[:(self.n-1)] not in self.counts.keys():
-                self.counts[x[:(self.n-1)]] = {x[(self.n-1)]:1}
+        for current_ngram_seq in self.ngrams:
+            if current_ngram_seq[:(self.n - 1)] not in self.counts.keys():
+                self.counts[current_ngram_seq[:(self.n - 1)]] = {current_ngram_seq[(self.n - 1)]: 1}
             else:
-                localdict = self.counts[x[:(self.n-1)]]
-                # print(localdict)
-                if x[(self.n-1)] not in localdict.keys():
-                    localdict[x[(self.n-1)]]=1
+                localdict = self.counts[current_ngram_seq[:(self.n - 1)]]
+                if current_ngram_seq[(self.n - 1)] not in localdict.keys():
+                    localdict[current_ngram_seq[(self.n - 1)]] = 1
                 else:
-                    localdict[x[(self.n-1)]]+=1
+                    localdict[current_ngram_seq[(self.n - 1)]] += 1
         # print(self.counts)
         self.pdf = self.counts.copy()
         # print(self.pdf)
@@ -85,16 +110,20 @@ class LanguageModel:
             self.pdf[z] = corpus.normalize(self.pdf[z])
         # print(self.pdf)
 
-    # returns the estimated probability distribution for the next word that occurs after the given token sequence
+    """
+            Returns the estimated probability distribution for the next word that occurs after the given token sequence 
+            :param tokens is of type list containing tokenize version derived from corpus.tokenize()  
+            input  => tokens = ['cat', 'and']
+            output => returns dict with probability of next word's prediction eg. lm.p_next(['cat', 'and']) = {'mouse': 0.6, 'dog': 0.4} .
+    """
     # TODO fix for unseen seq which is not present in dict
     def p_next(self, tokens):
-        # print(tokens)
-        # print("to search this ", tokens[-(self.n-1):])
         lst = tuple(tokens[-(self.n - 1):])
         return self.pdf[lst]
 
-
-    # generates a random token sequence according to the underlying probability distribution
+    """
+            Generates a random token sequence according to the underlying probability distribution
+    """
     def generate(self):
         res = []
         first_word = (random.choice(list(self.counts.keys())))
@@ -114,17 +143,24 @@ class LanguageModel:
         while True:
             if loopbreak:
                 break
-            # print(s)
-            tmp = self.p_next(res)
-            s = corpus.sample(tmp)
+            s = corpus.sample(self.p_next(res))
             if s == None:
                 break
             res.append(s)
         return res
 
+    """
+            Returns nthroot  
+            :param x is of value to be evaluated 
+            :param n is of nth root calculation 
+    """
     def nthroot(self, x, n):
         return x ** (1 / float(n))
 
+    """
+            Calculate the perplexity of the given Language Model. 
+            link : https://en.wikipedia.org/wiki/Perplexity
+    """
     # calculate the perplexity of the given text.
     def perplexity(self):
         # print(math.log(1.5,2))
@@ -147,5 +183,5 @@ if __name__ == '__main__':
     # lm.train(lst1+lst2)
     # print((lm.counts[(' the ', ' cat ')][' runs ']))
     # lm.generate()
-    # print(lm.generate())
+    print(lm.generate())
     print(lm.perplexity())
