@@ -21,7 +21,8 @@ def main():
         print("Press 3 : Generate a text from the language model, and print it to the screen")
         print("Press 4 : Generate a user-specified number of texts from the language model, and write them to a file")
         print("Press 5 : Print the predicted  next word's probability distribution")
-        print("Press 6 : Exit")
+        print("Press 6 : Perplexity of language model")
+        print("Press 7 : Exit")
         print("Enter your choice (integer) ")
         text = input()
         # c = lm.LanguageModel(3)
@@ -77,7 +78,16 @@ def main():
 
         elif text=="6":
             print()
-            print("You have pressed 6 for exit")
+            print("You have pressed 6 ")
+            print("Perplexity of the current language model is ", c.perplexity())
+
+        elif text == "7":
+            print()
+            print("You have pressed 7 for exit")
+            # for x in c.pdf:
+            #     print(x, c.pdf[x])
+            #
+            # print(len(c.pdf))
             print("Exiting the main program")
             sys.exit(0)
 

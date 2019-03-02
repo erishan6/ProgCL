@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import math
 import random
 
 import corpus
@@ -30,9 +31,18 @@ class LanguageModel:
 
     # list of sentences in file
     def train_file(self, sentences):
+        i = 1
+        size = len(sentences)
+        tmp = ""
         for line in sentences:
             # print(line)
-            self.train(corpus.tokenize(line.lower()))
+            if i % 1000 == 0 or i == size:
+                print(i)
+                self.train(corpus.tokenize(tmp.lower()))
+                tmp = ""
+            tmp += line + " "
+            i += 1
+
     # write unit tests for empty, short token or negative, 0, positive, more than token length
     def get_ngrams(self, tokens, ngramsize):
         newlst = []
@@ -99,13 +109,9 @@ class LanguageModel:
 
             else:
                 res.append(x)
-        # res.append(first_word)
-        # res.append(list(first_word))
         if all_none == len(first_word):
             self.generate()
         while True:
-            # print("print ", type(tmp), tmp, "s = ", type(s), s)
-
             if loopbreak:
                 break
             # print(s)
@@ -116,9 +122,19 @@ class LanguageModel:
             res.append(s)
         return res
 
+    def nthroot(self, x, n):
+        return x ** (1 / float(n))
+
     # calculate the perplexity of the given text.
     def perplexity(self):
-        print()
+        # print(math.log(1.5,2))
+        res = 0
+        for x in self.pdf.keys():
+            tmp = self.pdf[x]
+            for y in tmp.values():
+                res += (math.log(y, 2) * -1)  # negative log signifies 1/(p(w_i)|p(w_i-1))
+        return self.nthroot(res, self.n)
+
 
 
 
@@ -131,7 +147,5 @@ if __name__ == '__main__':
     # lm.train(lst1+lst2)
     # print((lm.counts[(' the ', ' cat ')][' runs ']))
     # lm.generate()
-    print(lm.generate())
-
-
-
+    # print(lm.generate())
+    print(lm.perplexity())
