@@ -11,8 +11,7 @@ Integration test for LanguageModel class. Ables to train with new data after tra
 class Test_lm(unittest.TestCase):
 
     def test_check(self):
-        n = int(input())
-        self.langM = lm.LanguageModel(n)
+        self.langM = lm.LanguageModel(2)
         self.assertIsInstance(self.langM, lm.LanguageModel, "Belongs to same class")
         self.langM.train(['the', 'dog', 'runs'])
         print(self.langM.counts)
