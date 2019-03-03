@@ -61,7 +61,6 @@ class LanguageModel:
         output => returns ngram sequences eg. [(None, 'oh'), ('oh', 'you'), ('you', 'darling'), ('darling', None)]
     """
 
-    # TODO write unit tests for empty, short token or negative, 0, positive, more than token length
     def get_ngrams(self, tokens, ngramsize):
         newlst = []
         for i in range(ngramsize - 1):
@@ -202,12 +201,8 @@ class LanguageModel:
 
 if __name__ == '__main__':
     lm = LanguageModel(2)
-    # lm.train([' the ', ' cat ', ' runs ', ' the ', ' cat ', ' the ', ' cat ', ' thea ', ' cat ', ' cat ' ,' the ', ' cats '])
+    lm.train(['the', 'cat', 'runs', 'the', 'cat', 'the', 'cat', 'thea', 'cat', 'cat', 'the', 'cats'])
     lm.train(['the', 'dog', 'runs', 'cat'])
-    # lst1=[' the ', ' cat ', ' runs ', ' the ', ' cat ', ' the ', ' cat ', ' thea ', ' cat ', ' cat ' ,' the ', ' cats ']
-    # lst2 = [' the ', ' dog ', ' runs ' ]
-    # lm.train(lst1+lst2)
-    # print((lm.counts[(' the ', ' cat ')][' runs ']))
-    # print(lm.generate())
-    # print(lm.perplexity())
-    # print(lm.p_next(['know']))
+    print((lm.counts[(' the ', ' cat ')][' runs ']))
+    print(lm.generate())
+    print(lm.perplexity())
